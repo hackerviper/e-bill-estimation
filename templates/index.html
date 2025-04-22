@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Electricity Usage Estimator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.onload = function() {
+      // Only reset form and hide results if it's a page load/refresh (not a form submission)
+      if (!window.location.search && !document.referrer) {
+        document.getElementById('estimator-form').reset();
+        hideResults();
+      }
+    }
+
+    function hideResults() {
+      const resultDiv = document.querySelector('.mt-8.p-6.bg-gray-50');
+      if (resultDiv) {
+        resultDiv.style.display = 'none';
+      }
+    }
+
+    // Handle form submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('estimator-form');
+      form.addEventListener('submit', function() {
+        const resultDiv = document.querySelector('.mt-8.p-6.bg-gray-50');
+        if (resultDiv) {
+          resultDiv.style.display = 'block';
+        }
+      });
+    });
+
+    // Prevent form resubmission on refresh
+    if (window.history.replaceState) {
+      window.history.replaceState(null, null, window.location.href);
+    }
+  </script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+  <div class="bg-white shadow-lg rounded-2xl p-8 max-w-6xl w-full">
+    <h1 class="text-3xl font-bold mb-8 text-center text-indigo-600">Electricity Usage & Bill Estimator</h1>
+    <form id="estimator-form" method="POST" class="space-y-6" autocomplete="off">
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <!-- Common Appliances -->
+        <div class="space-y-6">
+          <h2 class="text-xl font-semibold mb-4">Common Appliances</h2>
+          <div class="space-y-4">
+            {% for app in ['fan', 'light', 'fridge', 'ac', 'tv'] %}
+            <div class="grid grid-cols-2 gap-4 items-start">
+              <div>
+                <label class="block mb-2 font-medium">{{ app|title }}s</label>
+                <input type="number" name="{{ app }}" min="0" value="0" required 
+                       class="w-full p-3 border rounded-xl">
+              </div>
+              <div>
+                <label class="block mb-2 font-medium">Hours/Day
+                  <span class="text-sm text-gray-500">(max {{ appliance_data[app]['max_hours'] }})</span>
+                </label>
+                <input type="number" name="{{ app }}_hours" min="0" 
+                       max="{{ appliance_data[app]['max_hours'] }}"
+                       value="{{ appliance_data[app]['default_hours'] }}"
+                       class="w-full p-3 border rounded-xl">
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Miscellaneous Appliances -->
+        <div class="space-y-6">
+          <h2 class="text-xl font-semibold mb-4">Miscellaneous Appliances</h2>
+          <div class="space-y-4">
+            {% for app in ['washing_machine', 'microwave', 'computer', 'water_heater', 'iron'] %}
+            <div class="grid grid-cols-2 gap-4 items-start">
+              <div>
+                <label class="block mb-2 font-medium">{{ app|replace('_', ' ')|title }}</label>
+                <input type="number" name="{{ app }}" min="0" value="0" required 
+                       class="w-full p-3 border rounded-xl">
+              </div>
+              <div>
+                <label class="block mb-2 font-medium">Hours/Day
+                  <span class="text-sm text-gray-500">(max {{ appliance_data[app]['max_hours'] }})</span>
+                </label>
+                <input type="number" name="{{ app }}_hours" min="0" 
+                       max="{{ appliance_data[app]['max_hours'] }}"
+                       value="{{ appliance_data[app]['default_hours'] }}"
+                       class="w-full p-3 border rounded-xl">
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Usage Parameters -->
+      <div class="grid grid-cols-2 gap-6 mt-6">
+        <div>
+          <label class="block mb-2 font-medium">Season</label>
+          <select name="season" required class="w-full p-3 border rounded-xl">
+            <option value="0">Winter</option>
+            <option value="1">Monsoon</option>
+            <option value="2">Summer</option>
+          </select>
+        </div>
+        <div>
+          <label class="block mb-2 font-medium">Per Unit Cost (₹)</label>
+          <input type="number" name="unit_cost" step="0.1" min="0" required class="w-full p-3 border rounded-xl">
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 mt-6 text-lg font-medium">Calculate Consumption</button>
+    </form>
+
+    {% if result %}
+    <div class="mt-8 p-6 bg-gray-50 rounded-xl border">
+      {% if result.error %}
+        <p class="text-red-600 font-semibold">Error: {{ result.error }}</p>
+      {% else %}
+        <div class="space-y-6">
+          <h3 class="text-2xl font-semibold text-indigo-600">Consumption Analysis</h3>
+
+          <!-- Appliance-wise Consumption -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg overflow-hidden">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-3 text-left">Appliance</th>
+                  <th class="px-4 py-3 text-center">Count</th>
+                  <th class="px-4 py-3 text-center">Power (Watts)</th>
+                  <th class="px-4 py-3 text-center">Hours/Day</th>
+                  <th class="px-4 py-3 text-right">Daily Usage (kWh)</th>
+                  <th class="px-4 py-3 text-right">Daily Cost (₹)</th>
+                  <th class="px-4 py-3 text-right">Monthly Cost (₹)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                {% for appliance in result.appliance_details %}
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3">{{ appliance.name }}</td>
+                  <td class="px-4 py-3 text-center">{{ appliance.count }}</td>
+                  <td class="px-4 py-3 text-center">{{ appliance.power }}</td>
+                  <td class="px-4 py-3 text-center">{{ appliance.hours }}</td>
+                  <td class="px-4 py-3 text-right">{{ appliance.daily_consumption }}</td>
+                  <td class="px-4 py-3 text-right">₹{{ appliance.daily_cost }}</td>
+                  <td class="px-4 py-3 text-right">₹{{ appliance.monthly_cost }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Summary Stats -->
+          <div class="grid grid-cols-2 gap-6 mt-6">
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+              <p class="text-sm text-gray-600 mb-2">Daily Consumption</p>
+              <p class="text-2xl font-bold">{{ result.daily_consumption }} kWh</p>
+              <p class="text-sm text-gray-500">{{ result.season_text }} season</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+              <p class="text-sm text-gray-600 mb-2">Monthly Consumption</p>
+              <p class="text-2xl font-bold">{{ result.monthly_consumption }} kWh</p>
+              <p class="text-sm text-gray-500">30 days estimate</p>
+            </div>
+          </div>
+
+          <!-- Total Bill -->
+          <div class="bg-indigo-50 p-6 rounded-lg">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="text-sm text-indigo-600 mb-1">Per Unit Cost: ₹{{ result.unit_cost }}</p>
+                <p class="text-2xl font-bold text-indigo-600">Estimated Monthly Bill</p>
+              </div>
+              <p class="text-4xl font-bold text-indigo-600">₹{{ result.monthly_bill }}</p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
