@@ -1,181 +1,99 @@
-# Electricity Usage & Bill Estimator
+# E-Bill Estimation System
 
-A sophisticated web application that estimates electricity consumption and costs using fuzzy logic and real-world appliance power ratings. This tool is specifically designed for Indian households, with a focus on providing accurate estimates for tier 3 city homes.
+An intelligent electricity bill estimation system that uses fuzzy logic to predict electricity consumption and costs. Built with Python Flask and designed specifically for Indian households.
 
-## Features
+![Electricity Bill Estimator](https://raw.githubusercontent.com/hackerviper/e-bill-estimation/master/static/preview.png)
 
-- **Comprehensive Appliance Management**
-  - Support for common household appliances (fans, lights, AC, TV, fridge)
-  - Additional miscellaneous appliances (washing machine, microwave, computer, etc.)
-  - Individual usage hours tracking for each appliance
-  - Pre-configured power ratings based on typical Indian appliances
+## 🌟 Features
 
-- **Smart Estimation System**
+- **Smart Appliance Management**
+  - Support for 10+ common household appliances
+  - Individual usage hour tracking
+  - Pre-configured power ratings based on Indian appliances
+
+- **Intelligent Estimation**
   - Fuzzy logic-based consumption prediction
-  - Seasonal variation consideration (Winter, Monsoon, Summer)
-  - Realistic power consumption calculation based on actual appliance ratings
-  - Automatic validation of usage patterns
+  - Seasonal variation consideration (Winter/Monsoon/Summer)
+  - Realistic power consumption calculations
 
 - **Detailed Analysis**
   - Per-appliance consumption breakdown
   - Daily and monthly consumption estimates
   - Itemized cost calculation
-  - Season-specific adjustments
+  - Seasonal adjustments
 
-## Technical Details
-
-### Power Ratings (Watts)
-- Fan: 75W
-- LED Light: 40W
-- Refrigerator: 150W
-- AC (1.5 ton): 1500W
-- LED TV: 100W
-- Washing Machine: 500W
-- Microwave: 800W
-- Computer: 150W
-- Water Heater: 2000W
-- Iron: 1000W
-
-## Installation
+## 🚀 Quick Start
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd electricity_fuzzy_project
+   git clone https://github.com/hackerviper/e-bill-estimation.git
+   cd e-bill-estimation
    ```
 
-2. Create and activate a virtual environment:
+2. Create and activate virtual environment:
    ```bash
    python -m venv venv
    
-   # On Windows
+   # Windows
    .\venv\Scripts\activate
    
-   # On macOS/Linux
+   # Linux/MacOS
    source venv/bin/activate
    ```
 
-3. Install required packages:
+3. Install dependencies:
    ```bash
    pip install -r requirement.txt
    ```
 
-## Usage
-
-1. Start the Flask application:
+4. Run the application:
    ```bash
    python app.py
    ```
 
-2. Open your web browser and navigate to:
-   ```
-   http://localhost:5000
-   ```
+5. Open http://localhost:5000 in your browser
 
-3. Enter your appliance details:
-   - Specify the number of each type of appliance
-   - Set daily usage hours for each appliance
-   - Select the current season
-   - Enter your electricity cost per unit (₹)
+## 💡 Supported Appliances
 
-4. Click "Calculate Consumption" to see the detailed analysis
+| Appliance | Power (Watts) | Default Hours |
+|-----------|---------------|---------------|
+| Fan | 75W | 8 hrs |
+| LED Light | 40W | 6 hrs |
+| Refrigerator | 150W | 24 hrs |
+| AC (1.5 ton) | 1500W | 6 hrs |
+| LED TV | 100W | 4 hrs |
+| Washing Machine | 500W | 2 hrs |
+| Microwave | 800W | 1 hr |
+| Computer | 150W | 4 hrs |
+| Water Heater | 2000W | 1 hr |
+| Iron | 1000W | 1 hr |
 
-## Deployment on PythonAnywhere
+## 🛠️ Technical Stack
 
-1. Sign up for a free account at [PythonAnywhere](https://www.pythonanywhere.com)
+- **Backend**: Python Flask
+- **Frontend**: HTML5, TailwindCSS
+- **AI**: scikit-fuzzy for Fuzzy Logic
+- **Data Processing**: NumPy
 
-2. Upload your files:
-   - Go to the Files tab
-   - Create a new directory: `electricity_fuzzy_project`
-   - Upload all project files to this directory
-   - Or use Git to clone your repository:
-     ```bash
-     git clone https://github.com/your-username/electricity_fuzzy_project.git
-     ```
+## 📊 Screenshots
 
-3. Set up a virtual environment:
-   - Open a Bash console from PythonAnywhere
-   - Navigate to your project directory
-   ```bash
-   cd electricity_fuzzy_project
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirement.txt
-   ```
+(Add screenshots here)
 
-4. Configure the Web App:
-   - Go to the Web tab
-   - Click "Add a new web app"
-   - Choose "Manual Configuration"
-   - Select Python 3.11
-   - Set the following configurations:
-     - Source code: `/home/YOUR_USERNAME/electricity_fuzzy_project`
-     - Working directory: `/home/YOUR_USERNAME/electricity_fuzzy_project`
-     - WSGI configuration file: Use the provided `wsgi.py`
-     - Virtual environment: `/home/YOUR_USERNAME/electricity_fuzzy_project/venv`
+## 🤝 Contributing
 
-5. Update WSGI Configuration:
-   - In the Web tab, click on the WSGI configuration file link
-   - Replace the content with the provided `wsgi.py` content
-   - Update `YOUR_USERNAME` with your PythonAnywhere username
-   - Click Save
+Feel free to:
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/NewFeature`)
+3. Commit your changes (`git commit -m 'Add NewFeature'`)
+4. Push to the branch (`git push origin feature/NewFeature`)
+5. Open a Pull Request
 
-6. Configure Static Files:
-   - In the Web tab, add these static file mappings:
-   ```
-   URL: /static/
-   Directory: /home/YOUR_USERNAME/electricity_fuzzy_project/static
-   ```
+## 📝 License
 
-7. Reload the web app:
-   - Click the Reload button in the Web tab
-   - Your app will be available at: `http://YOUR_USERNAME.pythonanywhere.com`
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Note: Replace `YOUR_USERNAME` with your actual PythonAnywhere username in all paths.
+## 🙏 Acknowledgments
 
-## Technical Architecture
-
-### Frontend
-- HTML5 with Tailwind CSS for styling
-- Responsive design suitable for all device sizes
-- JavaScript for dynamic form handling
-- No-cache implementation for accurate results
-
-### Backend
-- Flask web framework
-- scikit-fuzzy for fuzzy logic implementation
-- NumPy for numerical computations
-- Custom validation and calculation modules
-
-### Fuzzy Logic System
-- Input variables:
-  - Number of appliances (0-20)
-  - Usage hours (0-24)
-  - Season (Winter/Monsoon/Summer)
-- Output:
-  - Daily consumption (kWh)
-  - Fuzzy sets: very_low, low, medium, high, very_high
-  - Realistic consumption ranges for tier 3 city context
-
-## Limitations
-- Maximum 20 appliances total
-- Usage hours must be within realistic ranges for each appliance
-- Calculations are estimates based on average power consumption
-- Seasonal variations are simplified into three categories
-
-## Dependencies
-- Flask==3.0.0
-- scikit-fuzzy==0.4.2
-- numpy==1.24.3
-- Additional dependencies listed in `requirement.txt`
-
-## Contributing
-Feel free to submit issues and enhancement requests!
-
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-- Developed with focus on Indian household electricity consumption patterns
+- Built with focus on Indian household electricity consumption patterns
 - Power ratings based on standard Indian market appliances
 - Fuzzy logic implementation inspired by real-world usage patterns
