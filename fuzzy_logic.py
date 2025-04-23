@@ -170,8 +170,8 @@ def predict_consumption(appliance_dict, appliance_hours, season_val):
                      for app, hours in validated_hours.items())
     avg_usage_hours = total_usage / total_appliances if total_appliances > 0 else 0
     
-    if not (0 <= total_appliances <= 20):
-        raise ValueError("Total number of appliances must be between 0 and 20")
+    if not (0 <= total_appliances <= 80):
+        raise ValueError("Total number of appliances must be between 0 and 80")
     if not (0 <= season_val <= 2):
         raise ValueError("Season must be 0 (Winter), 1 (Monsoon), or 2 (Summer)")
 

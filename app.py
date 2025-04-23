@@ -50,8 +50,8 @@ def index():
 
             # Input validation
             total_appliances = sum(appliances.values())
-            if total_appliances > 20:
-                raise ValueError("Total number of appliances cannot exceed 20")
+            if total_appliances > 80:
+                raise ValueError("Total number of appliances cannot exceed ")
             if unit_cost <= 0:
                 raise ValueError("Unit cost must be greater than 0")
 
